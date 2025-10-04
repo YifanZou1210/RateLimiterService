@@ -17,16 +17,20 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.判断当前运行环境（是否为开发模式）
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi();//仅在开发环境启动swagger,生产环境不会暴露接口文档以增强安全性
 }
 
-app.UseHttpsRedirection();
+app.UseHttpsRedirection();//中间件强制将http请求重定向到https,类似springboot的security filter
+//ASP.NET Core 中，中间件是 HTTP 请求处理链的一部分。每一个中间件都能：
+// 处理或修改请求；
+// 决定是否将请求传递给下一个中间件；
+// 在响应阶段也能拦截响应结果。
 
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
-
+//定义一个 GET 路由 /weatherforecast。当客户端请求 /weatherforecast 时，执行 Lambda 返回结果。
 app.MapGet("/weatherforecast", () =>
 {
     var forecast =  Enumerable.Range(1, 5).Select(index =>
@@ -40,9 +44,10 @@ app.MapGet("/weatherforecast", () =>
     return forecast;
 })
 .WithName("GetWeatherForecast");
-
+//启动webApplication开始监听http端口，正式运行服务器
 app.Run();
 
+//定义一个不可变数据类（record）。自动生成构造函数、getter、ToString()、Equals()。
 record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
 {
     public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);

@@ -1,0 +1,36 @@
+# 1. Construction 
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy Source File Folder 
+COPY ["src/RateLimiter.API/RateLimiter.API.csproj", "RateLimiter.API/"]
+COPY ["src/RateLimiter.Core/RateLimiter.Core.csproj", "RateLimiter.Core/"]
+
+# Restore Dependency
+RUN dotnet restore "RateLimiter.API/RateLimiter.API.csproj"
+
+# Copy Source Code
+COPY src/ .
+
+# Construction
+WORKDIR "/src/RateLimiter.API"
+RUN dotnet build "RateLimiter.API.csproj" -c Release -o /app/build
+
+# Release
+FROM build AS publish
+RUN dotnet publish "RateLimiter.API.csproj" -c Release -o /app/publish
+
+# 2. run image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+
+# Copy running file
+COPY --from=publish /app/publish .
+
+# healthcheck 
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost/health || exit 1
+
+ENTRYPOINT ["dotnet", "RateLimiter.API.dll"]

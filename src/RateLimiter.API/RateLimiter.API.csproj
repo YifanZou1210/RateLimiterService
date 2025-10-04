@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+<!-- 项目文件 -->
+<!-- 定义项目的元数据（TargetFramework,依赖包,版本信息等，类似java的构建描述比如pom.xml -->
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
+  </ItemGroup>
+<!-- 相当于java中的maven,构建时由MSBuild自动编译依赖 -->
+  <ItemGroup>
+    <ProjectReference Include="..\RateLimiter.Core\RateLimiter.Core.csproj" />
+  </ItemGroup>
+
+</Project>
